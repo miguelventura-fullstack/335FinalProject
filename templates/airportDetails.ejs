@@ -12,6 +12,7 @@
     <p>Airport Longitude: <%= longitude_deg %></p>
     <p>Airport Elevation: <%= elevation_ft %></p>
     <p> View flights at this airport: <a href="/opensky/airport?icao=<%= icao_code %>">View Flights</a></p>
+    <p> View flights in a radius around this airport: <a href="/opensky/location?lat=<%= latitude_deg %>&lon=<%= longitude_deg %>">View Flights</a></p>
     </ul>
   </body>
 </html>
