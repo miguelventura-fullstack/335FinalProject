@@ -1,0 +1,23 @@
+/* Global styles */
+html,
+body {
+  margin: 0;
+  padding: 8px;
+}
+
+/* Footer with full-width top border */
+footer {
+  border-top: 2px solid #d0d7de;
+  width: 100%;
+  padding: 8px 0px;
+  box-sizing: border-box;
+}
+
+footer a {
+  color: inherit;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
