@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Location Radius</title>
+
+<body>
+  <h1>Location Radius</h1>
+  <p>Location: <%= location.lat %>, <%= location.lon %>
+  </p>
+  <p>Radius: <%= radius %>
+  </p>
+
+  <!-- Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <div id="map" style="width: 600px; height: 450px;"></div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script>
+    (function () {
+      var centerLat = Number("<%= location.lat %>");
+      var centerLon = Number("<%= location.lon %>");
+      var map = L.map('map').setView([centerLat, centerLon], 8);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
+
+      var planes = [
+        <% (airborneFlights.flying || []).forEach(function (f, i) {
+        if (f.lat != null && f.lon != null) { %>
+          { callsign: "<%= f.callsign %>", lat: <%= f.lat %>, lon: <%= f.lon %>, on_ground: <%= f.on_ground %> } <%= ',' %>
+        <% }
+      }); %>
+        <% (airborneFlights.landed || []).forEach(function (f, i) {
+        if (f.lat != null && f.lon != null) { %>
+          { callsign: "<%= f.callsign %>", lat: <%= f.lat %>, lon: <%= f.lon %>, on_ground: <%= f.on_ground %> } <%= ',' %>
+        <% }
+      }); %>
+      ];
+
+      planes.forEach(function (p) {
+        if (p.on_ground === true) {
+          L.circleMarker([p.lat, p.lon], { color: 'blue', radius: 6 }).addTo(map).bindPopup(p.callsign);
+        } else {
+          L.circleMarker([p.lat, p.lon], { color: 'red', radius: 6 }).addTo(map).bindPopup(p.callsign);
+        }
+      });
+    })();
+  </script>
+
+  <p>Flying: <%= airborneFlights.flying.length %>
+  </p>
+
+  <ul>
+    <% airborneFlights.flying.forEach(function(flight) { %>
+      <li>
+        <%= flight.callsign %> - <%= flight.lat %> - <%= flight.lon %>
+      </li>
+      <% }); %>
+  </ul>
+  <p>Landed: <%= airborneFlights.landed.length %>
+  </p>
+  <ul>
+    <% airborneFlights.landed.forEach(function(flight) { %>
+      <li>
+        <%= flight.callsign %> - <%= flight.lat %> - <%= flight.lon %>
+      </li>
+      <% }); %>
+  </ul>
+</body>
+</head>
+
+</html>

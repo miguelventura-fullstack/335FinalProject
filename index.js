@@ -151,18 +151,26 @@ app.get("/opensky/location", async (req, res) => {
 
     const data = await response.json();
 
-    res.json(
-      data.states?.map((s) => ({
-        icao24: s[0],
-        callsign: s[1]?.trim(),
-        lat: s[6],
-        lon: s[5],
-        altitude_m: s[7],
-        speed_mps: s[9],
-        heading: s[10],
-        on_ground: s[8],
-      })) || []
-    );
+    let flights = data.states?.map((s) => ({
+      icao24: s[0],
+      callsign: s[1]?.trim() || "(unknown)",
+      lat: s[6],
+      lon: s[5],
+      altitude_m: s[7],
+      speed_mps: s[9],
+      heading: s[10],
+      on_ground: s[8],
+    })).sort((a, b) => a.callsign.localeCompare(b.callsign)).sort((a, b) => a.on_ground - b.on_ground) || [];
+    const airborneFlights = {flying: flights.filter((f) => f.on_ground === true), landed: flights.filter((f) => f.on_ground === false)};
+
+    res.render("locationRadius", {
+      location: {
+        lat: lat,
+        lon: lon,
+      },
+      radius: radius,
+      airborneFlights: airborneFlights,
+    });
   } catch {
     res.status(500).json({ error: "Failed to fetch OpenSky data" });
   }
